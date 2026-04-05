@@ -2,6 +2,12 @@ lib.name = pdnam~
 
 class.sources = pdnam~.cpp
 
+datafiles = \
+	pdnam~-help.pd \
+	tw40_blues_deluxe_deerinkstudios.json \
+	BossWN-nano.nam \
+	LICENSE
+
 common.sources = \
 	dep/NeuralAudio/NeuralAudio/NeuralModel.cpp \
 	dep/NeuralAudio/NeuralAudio/RTNeuralLoader.cpp \
