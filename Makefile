@@ -12,7 +12,7 @@ common.sources = \
 	dep/NeuralAudio/deps/NeuralAmpModelerCore/NAM/wavenet.cpp
 
 # Definitions and flags
-cflags = -std=gnu++17 -DNAM_SAMPLE_FLOAT -DDSP_SAMPLE_FLOAT \
+cflags = -std=gnu++20 -DNAM_SAMPLE_FLOAT -DDSP_SAMPLE_FLOAT \
 	-DBUILD_INTERNAL_STATIC_WAVENET -DBUILD_INTERNAL_STATIC_LSTM \
 	-DBUILD_NAMCORE -DBUILD_STATIC_RTNEURAL \
 	-DLSTM_MATH=FastMath -DWAVENET_MATH=FastMath \
