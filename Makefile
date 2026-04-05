@@ -31,6 +31,8 @@ cflags = -Idep/NeuralAudio -Idep/NeuralAudio/NeuralAudio \
 
 define forDarwin
 	cflags += -mmacosx-version-min=10.15
+	cxxflags += -mmacosx-version-min=10.15
+	ldflags += -mmacosx-version-min=10.15
 endef
 
 PDLIBBUILDER_DIR=dep/pd-lib-builder
