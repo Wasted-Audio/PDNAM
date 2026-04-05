@@ -12,27 +12,24 @@ common.sources = \
 	dep/NeuralAudio/deps/NeuralAmpModelerCore/NAM/wavenet.cpp
 
 # Definitions and flags
-cxxflags = -std=gnu++17 -DNAM_SAMPLE_FLOAT -DDSP_SAMPLE_FLOAT \
+cflags = -std=gnu++17 -DNAM_SAMPLE_FLOAT -DDSP_SAMPLE_FLOAT \
 	-DBUILD_INTERNAL_STATIC_WAVENET -DBUILD_INTERNAL_STATIC_LSTM \
 	-DBUILD_NAMCORE -DBUILD_STATIC_RTNEURAL \
 	-DLSTM_MATH=FastMath -DWAVENET_MATH=FastMath \
 	-DWAVENET_MAX_NUM_FRAMES=64 -DLAYER_ARRAY_BUFFER_PADDING=24 \
-	-DRTNEURAL_NAMESPACE=RTNeural -DRTNEURAL_USE_EIGEN=1 -DRTNEURAL_DEFAULT_ALIGNMENT=16
-
-# Include paths
-cflags = -Idep/NeuralAudio -Idep/NeuralAudio/NeuralAudio \
+	-DRTNEURAL_NAMESPACE=RTNeural -DRTNEURAL_USE_EIGEN=1 -DRTNEURAL_DEFAULT_ALIGNMENT=16 \
+	-Idep/NeuralAudio -Idep/NeuralAudio/NeuralAudio \
 	-Idep/NeuralAudio/deps/RTNeural \
 	-Idep/NeuralAudio/deps/math_approx/include \
 	-Idep/NeuralAudio/deps/NeuralAmpModelerCore \
 	-Idep/NeuralAudio/deps/RTNeural/modules/Eigen \
 	-Idep/NeuralAudio/deps/RTNeural/modules/json \
 	-Idep/NeuralAudio/deps/RTNeural-NAM \
+	-Idep/NeuralAudio/deps/RTNeural-NAM/wavenet \
 	-Idep/NeuralAudio/deps/RTNeural/modules/xsimd/include
 
 define forDarwin
 	cflags += -mmacosx-version-min=10.15
-	cxxflags += -mmacosx-version-min=10.15
-	ldflags += -mmacosx-version-min=10.15
 endef
 
 PDLIBBUILDER_DIR=dep/pd-lib-builder
