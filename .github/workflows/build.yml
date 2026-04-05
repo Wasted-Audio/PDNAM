@@ -13,7 +13,7 @@ jobs:
   Linux-Build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: recursive
     - name: Install PureData
@@ -32,7 +32,7 @@ jobs:
         make install PDINCLUDEDIR=./pure-data/src PDLIBDIR=./pd-PDNAM
 
     - name: Upload Zip
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: PDNAM-Linux
         path: ./pd-PDNAM/*
@@ -45,7 +45,7 @@ jobs:
      runs-on: windows-latest
      timeout-minutes: 25
      steps:
-     - uses: actions/checkout@v4
+     - uses: actions/checkout@v6
        with:
          submodules: recursive
 
@@ -76,7 +76,7 @@ jobs:
         make install PDDIR=./pure-data PDLIBDIR=./pd-PDNAM
 
      - name: Upload Zip
-       uses: actions/upload-artifact@v4
+       uses: actions/upload-artifact@v6
        with:
          name: PDNAM-Windows
          path: ./pd-PDNAM/*
@@ -87,7 +87,7 @@ jobs:
   Mac-Intel:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: recursive
 
@@ -101,7 +101,7 @@ jobs:
         make install PDLIBDIR=./pd-PDNAM
 
     - name: Upload Zip
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: PDNAM-macOS-intel
         path: ./pd-PDNAM/*
@@ -112,7 +112,7 @@ jobs:
   Mac-ARM:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: recursive
 
@@ -126,7 +126,7 @@ jobs:
         make install PDLIBDIR=./pd-PDNAM arch=arm64
 
     - name: Upload Zip
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: PDNAM-macoOS-arm
         path: ./pd-PDNAM/*
@@ -137,7 +137,7 @@ jobs:
   Mac-Universal:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: recursive
 
@@ -151,7 +151,7 @@ jobs:
         make install PDLIBDIR=./pd-PDNAM arch="x86_64 arm64"
 
     - name: Upload Zip
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: PDNAM-macoOS-universal
         path: ./pd-PDNAM/*
