@@ -23,6 +23,7 @@ cxxflags = -std=gnu++17 -DNAM_SAMPLE_FLOAT -DDSP_SAMPLE_FLOAT \
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S), Darwin)
     cxxflags += -mmacosx-version-min=10.15
+    ldflags  += -stdlib=libc++
 endif
 
 # Include paths
