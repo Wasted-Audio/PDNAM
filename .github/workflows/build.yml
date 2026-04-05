@@ -1,0 +1,157 @@
+name: Build CI
+
+on:
+  push:
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+
+# ===============================================================
+# ===============================================================
+# ===============================================================
+  Linux-Build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - name: Install PureData
+      run: sudo apt-get install puredata -y
+
+    - name: Downloads pd-Sources
+      run: |
+        PD_URL=$(curl -L -s https://api.github.com/repos/pure-data/pure-data/tags | grep zipball_url | grep -v latest | grep -v pd-0.54 | grep -v tagtest | head -n 1 | cut -d '"' -f 4)
+        curl -L -o pure-data.zip $PD_URL
+        unzip pure-data.zip
+        rm pure-data.zip
+        mv pure-data-* pure-data
+
+    - name: Build pd-PDNAM
+      run: |
+        make install PDINCLUDEDIR=./pure-data/src PDLIBDIR=./pd-PDNAM
+
+    - name: Upload Zip
+      uses: actions/upload-artifact@v4
+      with:
+        name: PDNAM-Linux
+        path: ./pd-PDNAM/*
+
+# # # # ===============================================================
+# # # # ===============================================================
+# # # # ===============================================================
+
+  Windows-Build:
+     runs-on: windows-latest
+     timeout-minutes: 25
+     steps:
+     - uses: actions/checkout@v4
+       with:
+         submodules: recursive
+
+     - uses: actions/setup-python@v5
+       with:
+         python-version: '3.10'
+
+     - if: runner.os == 'Windows'
+       name: "Install mingw deps"
+       uses: msys2/setup-msys2@v2
+       with:
+           install: make mingw-w64-x86_64-gcc mingw64/mingw-w64-x86_64-ntldd-git     mingw-w64-x86_64-fluidsynth mingw64/mingw-w64-x86_64-cmake unzip curl
+           update: false
+
+     - if: runner.os == 'Windows'
+       name: Get Pd
+       shell: msys2 {0}
+       run: |
+         curl -L -o pure-data.zip http://msp.ucsd.edu/Software/pd-0.54-0.msw.zip
+         unzip pure-data.zip
+         rm pure-data.zip
+         rename pd-0.54-0 pure-data pd-0.54-0
+
+     - if: runner.os == 'Windows'
+       name: Build pd-else
+       shell: msys2 {0}
+       run: |
+        make install PDDIR=./pure-data PDLIBDIR=./pd-PDNAM
+
+     - name: Upload Zip
+       uses: actions/upload-artifact@v4
+       with:
+         name: PDNAM-Windows
+         path: ./pd-PDNAM/*
+
+# # ===============================================================
+# # ===============================================================
+# # ===============================================================
+  Mac-Intel:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: set Enviroment
+      run: |
+        brew cleanup --prune=all
+        brew install --cask pd
+
+    - name: Build pd-PDNAM
+      run: |
+        make install PDLIBDIR=./pd-PDNAM
+
+    - name: Upload Zip
+      uses: actions/upload-artifact@v4
+      with:
+        name: PDNAM-macOS-intel
+        path: ./pd-PDNAM/*
+
+# ===============================================================
+# ===============================================================
+# ===============================================================
+  Mac-ARM:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: set Enviroment
+      run: |
+        brew cleanup --prune=all
+        brew install --cask pd
+
+    - name: Build pd-PDNAM
+      run: |
+        make install PDLIBDIR=./pd-PDNAM arch=arm64
+
+    - name: Upload Zip
+      uses: actions/upload-artifact@v4
+      with:
+        name: PDNAM-macoOS-arm
+        path: ./pd-PDNAM/*
+
+# ===============================================================
+# ===============================================================
+# ===============================================================
+  Mac-Universal:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: set Enviroment
+      run: |
+        brew cleanup --prune=all
+        brew install --cask pd
+
+    - name: Build pd-PDNAM
+      run: |
+        make install PDLIBDIR=./pd-PDNAM arch="x86_64 arm64"
+
+    - name: Upload Zip
+      uses: actions/upload-artifact@v4
+      with:
+        name: PDNAM-macoOS-universal
+        path: ./pd-PDNAM/*

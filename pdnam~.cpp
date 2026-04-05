@@ -1,0 +1,121 @@
+#include "m_pd.h"
+#include "g_canvas.h"
+#include "NeuralAudio/NeuralModel.h"
+#include <iostream>
+#include <string>
+#include <filesystem>
+
+static t_class *pdnam_tilde_class;
+
+typedef struct _pdnam_tilde {
+    t_object  x_obj;
+    t_sample f;
+    NeuralAudio::NeuralModel* modelL;
+    NeuralAudio::NeuralModel* modelR;
+    t_symbol* model_path;
+} t_pdnam_tilde;
+
+static void pdnam_tilde_load(t_pdnam_tilde *x)
+{
+    if (x->modelL) {
+        delete x->modelL;
+        x->modelL = nullptr;
+    }
+    if (x->modelR) {
+        delete x->modelR;
+        x->modelR = nullptr;
+    }
+
+    if (x->model_path == &s_) return;
+
+    // Resolve relative path
+    char buf[MAXPDSTRING];
+    canvas_makefilename(canvas_getcurrent(), x->model_path->s_name, buf, MAXPDSTRING);
+    std::filesystem::path path(buf);
+
+    if (!std::filesystem::exists(path)) {
+        pd_error(x, "pdnam~: model file not found: %s", buf);
+        return;
+    }
+
+    // Set load mode
+    NeuralAudio::EModelLoadMode mode = NeuralAudio::EModelLoadMode::Internal;
+
+    NeuralAudio::NeuralModel::SetWaveNetLoadMode(mode);
+    NeuralAudio::NeuralModel::SetLSTMLoadMode(mode);
+
+    x->modelL = NeuralAudio::NeuralModel::CreateFromFile(path);
+    if (x->modelL) {
+        // Create a second instance for stereo
+        x->modelR = NeuralAudio::NeuralModel::CreateFromFile(path);
+        post("pdnam~: loaded model %s", x->model_path->s_name);
+    } else {
+        pd_error(x, "pdnam~: failed to load model %s", x->model_path->s_name);
+    }
+}
+
+void *pdnam_tilde_new(t_symbol *s, int argc, t_atom *argv)
+{
+    t_pdnam_tilde *x = (t_pdnam_tilde *)pd_new(pdnam_tilde_class);
+
+    x->modelL = nullptr;
+    x->modelR = nullptr;
+    x->model_path = &s_;
+
+    if (argc >= 1 && argv[0].a_type == A_SYMBOL) {
+        x->model_path = atom_getsymbol(&argv[0]);
+    }
+
+    pdnam_tilde_load(x);
+
+    inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
+    outlet_new(&x->x_obj, &s_signal);
+    outlet_new(&x->x_obj, &s_signal);
+
+    return (void *)x;
+}
+
+t_int *pdnam_tilde_perform(t_int *w)
+{
+    t_pdnam_tilde *x = (t_pdnam_tilde *)(w[1]);
+    t_sample  *in1 = (t_sample *)(w[2]);
+    t_sample  *in2 = (t_sample *)(w[3]);
+    t_sample  *out1 = (t_sample *)(w[4]);
+    t_sample  *out2 = (t_sample *)(w[5]);
+    int n = (int)(w[6]);
+
+    if (x->modelL && x->modelR) {
+        x->modelL->Process(in1, out1, n);
+        x->modelR->Process(in2, out2, n);
+    } else {
+        while (n--) {
+            *out1++ = *in1++;
+            *out2++ = *in2++;
+        }
+    }
+
+    return (w+7);
+}
+
+void pdnam_tilde_dsp(t_pdnam_tilde *x, t_signal **sp)
+{
+    dsp_add(pdnam_tilde_perform, 6, x,
+            sp[0]->s_vec, sp[1]->s_vec, sp[2]->s_vec, sp[3]->s_vec, sp[0]->s_n);
+}
+
+void pdnam_tilde_free(t_pdnam_tilde *x)
+{
+    if (x->modelL) delete x->modelL;
+    if (x->modelR) delete x->modelR;
+}
+
+extern "C" void pdnam_tilde_setup(void) {
+    pdnam_tilde_class = class_new(gensym("pdnam~"),
+        (t_newmethod)pdnam_tilde_new,
+        (t_method)pdnam_tilde_free, sizeof(t_pdnam_tilde),
+        CLASS_DEFAULT, A_GIMME, 0);
+
+    class_addmethod(pdnam_tilde_class,
+        (t_method)pdnam_tilde_dsp, gensym("dsp"), A_CANT, 0);
+    CLASS_MAINSIGNALIN(pdnam_tilde_class, t_pdnam_tilde, f);
+}
