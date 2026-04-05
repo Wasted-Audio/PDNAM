@@ -29,9 +29,8 @@ cflags = -Idep/NeuralAudio -Idep/NeuralAudio/NeuralAudio \
 	-Idep/NeuralAudio/deps/RTNeural-NAM \
 	-Idep/NeuralAudio/deps/RTNeural/modules/xsimd/include
 
-# macOS deployment target
-UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S), Darwin)
+# macOS-specific flags
+ifeq ($(system), Darwin)
 	cxxflags += -mmacosx-version-min=10.15
 	cflags += -mmacosx-version-min=10.15
 endif
