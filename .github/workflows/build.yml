@@ -86,6 +86,8 @@ jobs:
 # # ===============================================================
   Mac-Intel:
     runs-on: macos-latest
+    env:
+      MACOSX_DEPLOYMENT_TARGET: "10.15"
     steps:
     - uses: actions/checkout@v6
       with:
@@ -98,7 +100,6 @@ jobs:
 
     - name: Build pd-PDNAM
       run: |
-        export MACOSX_DEPLOYMENT_TARGET=10.15
         make install PDLIBDIR=./pd-PDNAM
 
     - name: Upload Zip
@@ -112,6 +113,8 @@ jobs:
 # ===============================================================
   Mac-ARM:
     runs-on: macos-latest
+    env:
+      MACOSX_DEPLOYMENT_TARGET: "10.15"
     steps:
     - uses: actions/checkout@v6
       with:
@@ -124,7 +127,6 @@ jobs:
 
     - name: Build pd-PDNAM
       run: |
-        export MACOSX_DEPLOYMENT_TARGET=10.15
         make install PDLIBDIR=./pd-PDNAM arch=arm64
 
     - name: Upload Zip
@@ -138,6 +140,8 @@ jobs:
 # ===============================================================
   Mac-Universal:
     runs-on: macos-latest
+    env:
+      MACOSX_DEPLOYMENT_TARGET: "10.15"
     steps:
     - uses: actions/checkout@v6
       with:
@@ -150,7 +154,6 @@ jobs:
 
     - name: Build pd-PDNAM
       run: |
-        export MACOSX_DEPLOYMENT_TARGET=10.15
         make install PDLIBDIR=./pd-PDNAM arch="x86_64 arm64"
 
     - name: Upload Zip
