@@ -86,8 +86,6 @@ jobs:
 # # ===============================================================
   Mac-Intel:
     runs-on: macos-latest
-    env:
-      MACOSX_DEPLOYMENT_TARGET: "10.15"
     steps:
     - uses: actions/checkout@v6
       with:
@@ -113,8 +111,6 @@ jobs:
 # ===============================================================
   Mac-ARM:
     runs-on: macos-latest
-    env:
-      MACOSX_DEPLOYMENT_TARGET: "10.15"
     steps:
     - uses: actions/checkout@v6
       with:
@@ -140,8 +136,6 @@ jobs:
 # ===============================================================
   Mac-Universal:
     runs-on: macos-latest
-    env:
-      MACOSX_DEPLOYMENT_TARGET: "10.15"
     steps:
     - uses: actions/checkout@v6
       with:

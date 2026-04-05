@@ -19,6 +19,12 @@ cxxflags = -std=gnu++17 -DNAM_SAMPLE_FLOAT -DDSP_SAMPLE_FLOAT \
 	-DWAVENET_MAX_NUM_FRAMES=64 -DLAYER_ARRAY_BUFFER_PADDING=24 \
 	-DRTNEURAL_NAMESPACE=RTNeural -DRTNEURAL_USE_EIGEN=1 -DRTNEURAL_DEFAULT_ALIGNMENT=16
 
+# macOS deployment target
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S), Darwin)
+    cxxflags += -mmacosx-version-min=10.15
+endif
+
 # Include paths
 cflags = -Idep/NeuralAudio -Idep/NeuralAudio/NeuralAudio \
 	-Idep/NeuralAudio/deps/RTNeural \
