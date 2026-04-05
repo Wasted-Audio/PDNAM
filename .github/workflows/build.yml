@@ -98,7 +98,7 @@ jobs:
 
     - name: Build pd-PDNAM
       run: |
-        make install PDLIBDIR=./pd-PDNAM
+        make install PDLIBDIR=./pd-PDNAM arch=x86_64
 
     - name: Upload Zip
       uses: actions/upload-artifact@v6
@@ -128,7 +128,7 @@ jobs:
     - name: Upload Zip
       uses: actions/upload-artifact@v6
       with:
-        name: PDNAM-macoOS-arm
+        name: PDNAM-macOS-arm
         path: ./pd-PDNAM/*
 
 # ===============================================================
@@ -153,5 +153,5 @@ jobs:
     - name: Upload Zip
       uses: actions/upload-artifact@v6
       with:
-        name: PDNAM-macoOS-universal
+        name: PDNAM-macOS-universal
         path: ./pd-PDNAM/*
