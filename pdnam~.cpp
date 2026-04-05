@@ -1,3 +1,8 @@
+// PDNAM
+// Copyright (C) 2026 Wasted Audio
+//
+// SPDX-License-Identifier: MIT
+
 #include "m_pd.h"
 #include "g_canvas.h"
 #include "NeuralAudio/NeuralModel.h"
