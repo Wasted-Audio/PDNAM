@@ -30,7 +30,7 @@ cflags = -Idep/NeuralAudio -Idep/NeuralAudio/NeuralAudio \
 	-Idep/NeuralAudio/deps/RTNeural/modules/xsimd/include
 
 define forDarwin
-	cflags = -mmacosx-version-min=10.15
+	cflags += -mmacosx-version-min=10.15
 endef
 
 PDLIBBUILDER_DIR=dep/pd-lib-builder
