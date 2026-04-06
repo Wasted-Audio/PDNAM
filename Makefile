@@ -6,6 +6,8 @@ datafiles = \
 	pdnam~-help.pd \
 	tw40_blues_deluxe_deerinkstudios.json \
 	BossWN-nano.nam \
+	Tomato_Preamp_Maximum_Gain.aidax \
+	README.md \
 	LICENSE
 
 common.sources = \
