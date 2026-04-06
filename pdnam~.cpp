@@ -33,7 +33,7 @@ static void pdnam_tilde_load(t_pdnam_tilde *x)
     canvas_makefilename(canvas_getcurrent(), x->model_path->s_name, buf, MAXPDSTRING);
     std::filesystem::path path(buf);
 
-    if (!std::filesystem::exists(path)) {
+    if (!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path)) {
         pd_error(x, "pdnam~: model file not found: %s", buf);
         return;
     }
