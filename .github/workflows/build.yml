@@ -10,7 +10,7 @@ jobs:
 # ===============================================================
 # ===============================================================
 # ===============================================================
-  Linux-Build:
+  Linux-amd64:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
@@ -29,18 +29,47 @@ jobs:
 
     - name: Build pd-PDNAM
       run: |
-        make install PDINCLUDEDIR=./pure-data/src PDLIBDIR=./pd-PDNAM
+        make install PDINCLUDEDIR=./pure-data/src PDLIBDIR=./pd-PDNAM arch=x86_64
 
     - name: Upload Zip
       uses: actions/upload-artifact@v6
       with:
-        name: PDNAM-Linux
+        name: PDNAM-Linux-amd64
+        path: ./pd-PDNAM/*
+
+# ===============================================================
+# ===============================================================
+# ===============================================================
+  Linux-arm64:
+    runs-on: ubuntu-24.04-arm
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        submodules: recursive
+    - name: Install PureData
+      run: sudo apt-get install puredata -y
+
+    - name: Downloads pd-Sources
+      run: |
+        PD_URL=$(curl -L -s https://api.github.com/repos/pure-data/pure-data/tags | grep zipball_url | grep -v latest | grep -v pd-0.54 | grep -v tagtest | head -n 1 | cut -d '"' -f 4)
+        curl -L -o pure-data.zip $PD_URL
+        unzip pure-data.zip
+        rm pure-data.zip
+        mv pure-data-* pure-data
+
+    - name: Build pd-PDNAM
+      run: |
+        make install PDINCLUDEDIR=./pure-data/src PDLIBDIR=./pd-PDNAM arch=aarch64
+
+    - name: Upload Zip
+      uses: actions/upload-artifact@v6
+      with:
+        name: PDNAM-Linux-arm64
         path: ./pd-PDNAM/*
 
 # # # # ===============================================================
 # # # # ===============================================================
 # # # # ===============================================================
-
   Windows-Build:
      runs-on: windows-latest
      timeout-minutes: 25
