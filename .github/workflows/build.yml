@@ -106,56 +106,6 @@ jobs:
          name: PDNAM-Windows
          path: ./pd-PDNAM/*
 
-# # ===============================================================
-# # ===============================================================
-# # ===============================================================
-  Mac-Intel:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v6
-      with:
-        submodules: recursive
-
-    - name: set Enviroment
-      run: |
-        brew cleanup --prune=all
-        brew install --cask pd
-
-    - name: Build pd-PDNAM
-      run: |
-        make install PDLIBDIR=./pd-PDNAM arch=x86_64 extension=d_amd64
-
-    - name: Upload Zip
-      uses: actions/upload-artifact@v6
-      with:
-        name: PDNAM-macOS-intel
-        path: ./pd-PDNAM/*
-
-# ===============================================================
-# ===============================================================
-# ===============================================================
-  Mac-ARM:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v6
-      with:
-        submodules: recursive
-
-    - name: set Enviroment
-      run: |
-        brew cleanup --prune=all
-        brew install --cask pd
-
-    - name: Build pd-PDNAM
-      run: |
-        make install PDLIBDIR=./pd-PDNAM arch=arm64 extension=d_arm64
-
-    - name: Upload Zip
-      uses: actions/upload-artifact@v6
-      with:
-        name: PDNAM-macOS-arm
-        path: ./pd-PDNAM/*
-
 # ===============================================================
 # ===============================================================
 # ===============================================================
