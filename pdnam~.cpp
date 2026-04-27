@@ -26,7 +26,7 @@ struct Model {
         MicroNAM::LiteNet<1>,
         MicroNAM::StandardNet<1>
     > net;
-    
+
     void load_weights(const std::vector<float>& weights) {
         const float* w = weights.data();
         if (weights.size() == 842) {
@@ -54,7 +54,7 @@ struct Model {
             }
         }, net);
     }
-    
+
     bool is_loaded() const {
         return !std::holds_alternative<std::monostate>(net);
     }
@@ -63,13 +63,14 @@ struct Model {
 typedef struct _pdnam_tilde {
     t_object x_obj;
     t_sample f;
-    std::unique_ptr<Model> model;
+    t_canvas* canvas;
+    Model* model;
 } t_pdnam_tilde;
 
 static void pdnam_tilde_load(t_pdnam_tilde *x, t_symbol *s)
 {
     char buf[MAXPDSTRING];
-    canvas_makefilename(canvas_getcurrent(), s->s_name, buf, MAXPDSTRING);
+    canvas_makefilename(x->canvas, s->s_name, buf, MAXPDSTRING);
     std::filesystem::path path(buf);
 
     if (!std::filesystem::exists(path)) {
@@ -83,12 +84,15 @@ static void pdnam_tilde_load(t_pdnam_tilde *x, t_symbol *s)
 
         if (data.contains("weights") && data["weights"].is_array()) {
             std::vector<float> weights = data["weights"].get<std::vector<float>>();
-            auto new_model = std::make_unique<Model>();
+            Model* new_model = new Model();
             new_model->load_weights(weights);
+
             if (new_model->is_loaded()) {
-                x->model = std::move(new_model);
+                delete x->model;
+                x->model = new_model;
                 post("pdnam~: loaded model %s (%zu weights)", s->s_name, weights.size());
             } else {
+                delete new_model;
                 pd_error(x, "pdnam~: unsupported weight count: %zu", weights.size());
             }
         } else {
@@ -131,6 +135,7 @@ static void pdnam_tilde_dsp(t_pdnam_tilde *x, t_signal **sp)
 static void *pdnam_tilde_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_pdnam_tilde *x = (t_pdnam_tilde *)pd_new(pdnam_tilde_class);
+    x->canvas = canvas_getcurrent();
     x->model = nullptr;
 
     if (argc >= 1 && argv[0].a_type == A_SYMBOL) {
@@ -143,7 +148,8 @@ static void *pdnam_tilde_new(t_symbol *s, int argc, t_atom *argv)
 
 static void pdnam_tilde_free(t_pdnam_tilde *x)
 {
-    x->model.reset();
+    delete x->model;
+    x->model = nullptr;
 }
 
 extern "C" void pdnam_tilde_setup(void) {
