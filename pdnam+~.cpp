@@ -15,22 +15,22 @@ static t_class *pdnam_plus_tilde_class;
 typedef struct _pdnam_plus_tilde {
     t_object  x_obj;
     t_sample f;
+    t_canvas* canvas;
     NeuralAudio::NeuralModel* model;
-    t_symbol* model_path;
 } t_pdnam_plus_tilde;
 
-static void pdnam_plus_tilde_load(t_pdnam_plus_tilde *x)
+static void pdnam_plus_tilde_load(t_pdnam_plus_tilde *x, t_symbol *model_path)
 {
     if (x->model) {
         delete x->model;
         x->model = nullptr;
     }
 
-    if (x->model_path == &s_) return;
+    if (model_path == &s_) return;
 
     // Resolve relative path
     char buf[MAXPDSTRING];
-    canvas_makefilename(canvas_getcurrent(), x->model_path->s_name, buf, MAXPDSTRING);
+    canvas_makefilename(x->canvas, model_path->s_name, buf, MAXPDSTRING);
     std::filesystem::path path(buf);
 
     if (!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path)) {
@@ -38,32 +38,31 @@ static void pdnam_plus_tilde_load(t_pdnam_plus_tilde *x)
         return;
     }
 
-    // Set load mode
-    NeuralAudio::EModelLoadMode mode = NeuralAudio::EModelLoadMode::Internal;
-
-    NeuralAudio::NeuralModel::SetWaveNetLoadMode(mode);
-    NeuralAudio::NeuralModel::SetLSTMLoadMode(mode);
-
-    x->model = NeuralAudio::NeuralModel::CreateFromFile(path);
-    if (x->model) {
-        post("pdnam+~: loaded model %s", x->model_path->s_name);
-    } else {
-        pd_error(x, "pdnam+~: failed to load model %s", x->model_path->s_name);
+    try {
+        x->model = NeuralAudio::NeuralModel::CreateFromFile(path);
+        if (x->model) {
+            post("pdnam+~: loaded model %s", model_path->s_name);
+        } else {
+            pd_error(x, "pdnam+~: failed to load model %s", model_path->s_name);
+        }
+    } catch (const std::exception& e) {
+        pd_error(x, "pdnam+~: exception loading model: %s", e.what());
+    } catch (...) {
+        pd_error(x, "pdnam+~: unknown exception loading model");
     }
 }
 
 void *pdnam_plus_tilde_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_pdnam_plus_tilde *x = (t_pdnam_plus_tilde *)pd_new(pdnam_plus_tilde_class);
-
+    x->canvas = canvas_getcurrent();
     x->model = nullptr;
-    x->model_path = &s_;
 
-    if (argc >= 1 && argv[0].a_type == A_SYMBOL) {
-        x->model_path = atom_getsymbol(&argv[0]);
-    }
+    t_symbol* model_path = (argc >= 1 && argv[0].a_type == A_SYMBOL)
+        ? atom_getsymbol(&argv[0])
+        : &s_;
 
-    pdnam_plus_tilde_load(x);
+    pdnam_plus_tilde_load(x, model_path);
 
     outlet_new(&x->x_obj, &s_signal);
 
