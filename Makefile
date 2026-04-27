@@ -1,15 +1,10 @@
-lib.name = pdnam~
+lib.name = pdnam
 
-class.sources = pdnam~.cpp
+# pdnam~ only needs its own source (header-only MicroNAM + nlohmann/json)
+pdnam~.class.sources = pdnam~.cpp
 
-datafiles = \
-	pdnam~-help.pd \
-	README.md \
-	LICENSE
-
-datadirs = data/
-
-common.sources = \
+# pdnam+~ needs NeuralAudio implementation
+pdnam+~.class.sources = pdnam+~.cpp \
 	dep/NeuralAudio/NeuralAudio/NeuralModel.cpp \
 	dep/NeuralAudio/NeuralAudio/RTNeuralLoader.cpp \
 	dep/NeuralAudio/deps/RTNeural/RTNeural/RTNeural.cpp \
@@ -17,6 +12,14 @@ common.sources = \
 	dep/NeuralAudio/deps/NeuralAmpModelerCore/NAM/lstm.cpp \
 	dep/NeuralAudio/deps/NeuralAmpModelerCore/NAM/dsp.cpp \
 	dep/NeuralAudio/deps/NeuralAmpModelerCore/NAM/wavenet.cpp
+
+datafiles = \
+	pdnam~-help.pd \
+	pdnam+~-help.pd \
+	README.md \
+	LICENSE
+
+datadirs = data/
 
 # Definitions and flags
 cflags = -std=gnu++20 -DNAM_SAMPLE_FLOAT -DDSP_SAMPLE_FLOAT \
@@ -32,7 +35,8 @@ cflags = -std=gnu++20 -DNAM_SAMPLE_FLOAT -DDSP_SAMPLE_FLOAT \
 	-Idep/NeuralAudio/deps/RTNeural/modules/json \
 	-Idep/NeuralAudio/deps/RTNeural-NAM \
 	-Idep/NeuralAudio/deps/RTNeural-NAM/wavenet \
-	-Idep/NeuralAudio/deps/RTNeural/modules/xsimd/include
+	-Idep/NeuralAudio/deps/RTNeural/modules/xsimd/include \
+	-Idep/MicroNAM -Idep/json/single_include
 
 define forDarwin
 	cflags += -mmacosx-version-min=10.15
