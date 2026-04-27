@@ -10,7 +10,7 @@ Several example models are included for testing.
 
 ## License
 
-This project is released under the MIT license.
+This project is released under the MIT license. As are MicroNAM and NeuralAudio.
 
 "BossWN-nano.nam" comes from NeuralAudio and is under MIT.
 
