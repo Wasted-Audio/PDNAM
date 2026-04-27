@@ -12,6 +12,6 @@ Several example models are included for testing.
 
 This project is released under the MIT license. As are MicroNAM and NeuralAudio.
 
-"BossWN-nano.nam" comes from NeuralAudio and is under MIT.
+"BossWN" WaveNet models come from NeuralAudio and are under MIT.
 
 The "tw40_blues_deluxe_deerinkstudios.json" and "Tomato_Preamp_Maximum_Gain.aidax" models are under the CC BY-NC-ND 4.0 license.
