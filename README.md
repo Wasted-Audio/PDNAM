@@ -1,6 +1,6 @@
 # PDNAM
 
-Basic [NAM](https://www.neuralampmodeler.com/) loader externals for Pure Data. These externals are deliberatily minimal with no additional options. The only argument is a relative path to a model file to load.
+Basic [NAM](https://www.neuralampmodeler.com/) loader externals for Pure Data. These externals are deliberately minimal with no additional options. The only argument is a relative path to a model file to load.
 
 `pdnam~` uses the [MicroNAM](https://github.com/jaffco/MicroNAM) implementation and supports the four WaveNet model types: Nano, Feather, Lite, and Standard.
 

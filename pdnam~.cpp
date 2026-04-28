@@ -11,6 +11,7 @@
 #include <memory>
 #include <variant>
 #include <filesystem>
+#include <type_traits>
 #include "nlohmann/json.hpp"
 #include "MicroNAM.h"
 
