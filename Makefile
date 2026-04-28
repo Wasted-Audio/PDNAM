@@ -1,4 +1,12 @@
-lib.name = pdnam
+lib.name = PDNAM
+
+datafiles = \
+	pdnam~-help.pd \
+	pdnam+~-help.pd \
+	README.md \
+	LICENSE
+
+datadirs = data/
 
 # pdnam~ only needs its own source (header-only MicroNAM + nlohmann/json)
 pdnam~.class.sources = pdnam~.cpp
@@ -12,14 +20,6 @@ pdnam+~.class.sources = pdnam+~.cpp \
 	dep/NeuralAudio/deps/NeuralAmpModelerCore/NAM/lstm.cpp \
 	dep/NeuralAudio/deps/NeuralAmpModelerCore/NAM/dsp.cpp \
 	dep/NeuralAudio/deps/NeuralAmpModelerCore/NAM/wavenet.cpp
-
-datafiles = \
-	pdnam~-help.pd \
-	pdnam+~-help.pd \
-	README.md \
-	LICENSE
-
-datadirs = data/
 
 # Definitions and flags
 cflags = -std=gnu++20 -DNAM_SAMPLE_FLOAT -DDSP_SAMPLE_FLOAT \
