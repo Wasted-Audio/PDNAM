@@ -45,8 +45,8 @@ endef
 define forWindows
 	ldflags += -Wl,--allow-multiple-definition
 	ldflags += -static-libgcc -static-libstdc++
-	ldflags += -Wl,-Bstatic -lpthread -Wl,-Bdynamic
 	ldflags += -Wl,--as-needed
+	ldflags += -Wl,-Bstatic,--whole-archive -lpthread -Wl,--no-whole-archive,-Bdynamic
 endef
 
 PDLIBBUILDER_DIR=dep/pd-lib-builder
