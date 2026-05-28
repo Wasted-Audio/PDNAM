@@ -43,7 +43,9 @@ define forDarwin
 endef
 
 define forWindows
-    ldlibs += -Wl,-Bstatic,--whole-archive,-lpthread
+	ldflags += -Wl,--allow-multiple-definition -lucrt
+	ldflags += -static -static-libgcc -static-libstdc++
+	ldflags += -Wl,-Bstatic -lpthread -Wl,-Bdynamic
 endef
 
 PDLIBBUILDER_DIR=dep/pd-lib-builder
