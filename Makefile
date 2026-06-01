@@ -42,5 +42,12 @@ define forDarwin
 	cflags += -mmacosx-version-min=10.15
 endef
 
+define forWindows
+	ldflags += -Wl,--allow-multiple-definition
+	ldflags += -static-libgcc -static-libstdc++
+	ldflags += -Wl,--as-needed
+	ldflags += -Wl,-Bstatic,--whole-archive -lpthread -Wl,--no-whole-archive,-Bdynamic
+endef
+
 PDLIBBUILDER_DIR=dep/pd-lib-builder
 include $(PDLIBBUILDER_DIR)/Makefile.pdlibbuilder
