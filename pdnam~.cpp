@@ -25,7 +25,9 @@ struct Model {
         MicroNAM::NanoNet<1>,
         MicroNAM::FeatherNet<1>,
         MicroNAM::LiteNet<1>,
-        MicroNAM::StandardNet<1>
+        MicroNAM::StandardNet<1>,
+        MicroNAM::A2LiteNet<1>,
+        MicroNAM::A2FullNet<1>
     > net;
 
     void load_weights(const std::vector<float>& weights) {
@@ -42,6 +44,12 @@ struct Model {
         } else if (weights.size() == 13802) {
             net.emplace<MicroNAM::StandardNet<1>>();
             std::get<4>(net).load_weights(w);
+        } else if (weights.size() == 1871) {
+            net.emplace<MicroNAM::A2LiteNet<1>>();
+            std::get<5>(net).load_weights(w);
+        } else if (weights.size() == 12146 || weights.size() == 14017) {
+            net.emplace<MicroNAM::A2FullNet<1>>();
+            std::get<6>(net).load_weights(w);
         }
     }
 
@@ -83,22 +91,71 @@ static void pdnam_tilde_load(t_pdnam_tilde *x, t_symbol *s)
         std::ifstream f(path);
         json data = json::parse(f);
 
-        if (data.contains("weights") && data["weights"].is_array()) {
+        std::vector<float> full_weights;
+        std::vector<float> lite_weights;
+
+        // 1. Check top-level weights (A1 format)
+        if (data.contains("weights") && data["weights"].is_array() && !data["weights"].empty()) {
             std::vector<float> weights = data["weights"].get<std::vector<float>>();
             Model* new_model = new Model();
             new_model->load_weights(weights);
-
             if (new_model->is_loaded()) {
                 delete x->model;
                 x->model = new_model;
-                post("pdnam~: loaded model %s (%zu weights)", s->s_name, weights.size());
-            } else {
-                delete new_model;
-                pd_error(x, "pdnam~: unsupported weight count: %zu", weights.size());
+                post("pdnam~: loaded A1 model %s (%zu weights)", s->s_name, weights.size());
+                return;
             }
-        } else {
-            pd_error(x, "pdnam~: JSON missing 'weights' array");
+            delete new_model;
         }
+
+        // 2. Check SlimmableContainer submodels (A2 format)
+        if (data.contains("config") && data["config"].contains("submodels")) {
+            if (data["config"]["submodels"].is_array() && !data["config"]["submodels"].empty()) {
+                // Collect all valid submodel weights first
+                for (auto& submodel : data["config"]["submodels"]) {
+                    if (submodel.contains("model") &&
+                        submodel["model"].contains("weights") &&
+                        submodel["model"]["weights"].is_array() &&
+                        !submodel["model"]["weights"].empty())
+                    {
+                        auto w = submodel["model"]["weights"].get<std::vector<float>>();
+                        if (w.size() == 12146) {
+                            full_weights = w;
+                        } else if (w.size() == 1871) {
+                            lite_weights = w;
+                        }
+                    }
+                }
+
+                // Priority: Full > Lite
+                if (!full_weights.empty()) {
+                    Model* new_model = new Model();
+                    new_model->load_weights(full_weights);
+                    if (new_model->is_loaded()) {
+                        delete x->model;
+                        x->model = new_model;
+                        post("pdnam~: loaded A2-Full model %s (12146 weights)", s->s_name);
+                        return;
+                    }
+                    delete new_model;
+                }
+
+                if (!lite_weights.empty()) {
+                    Model* new_model = new Model();
+                    new_model->load_weights(lite_weights);
+                    if (new_model->is_loaded()) {
+                        delete x->model;
+                        x->model = new_model;
+                        post("pdnam~: loaded A2-Lite model %s (1871 weights)", s->s_name);
+                        return;
+                    }
+                    delete new_model;
+                }
+            }
+        }
+
+        pd_error(x, "pdnam~: no supported model found in %s", s->s_name);
+
     } catch (const std::exception& e) {
         pd_error(x, "pdnam~: error loading JSON: %s", e.what());
     }
