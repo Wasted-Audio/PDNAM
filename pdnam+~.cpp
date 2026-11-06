@@ -91,6 +91,8 @@ t_int *pdnam_plus_tilde_perform(t_int *w)
 
 void pdnam_plus_tilde_dsp(t_pdnam_plus_tilde *x, t_signal **sp)
 {
+    if (x->model) x->model->SetMaxAudioBufferSize(sp[0]->s_n);
+
     dsp_add(pdnam_plus_tilde_perform, 4, x,
             sp[0]->s_vec, sp[1]->s_vec, sp[0]->s_n);
 }
