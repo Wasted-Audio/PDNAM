@@ -216,7 +216,7 @@ static void pdnam_tilde_load(t_pdnam_tilde *x, t_symbol *s, t_symbol *want) {
             return;
         }
 
-        auto w = (*choice.sub)["model"]["weights"].get<std::vector<float>>();
+        auto w = (*choice.sub)["model"].at("weights").get<std::vector<float>>();
         auto m = std::make_unique<Model>();
         if (!m->load_weights(w)) {
             pd_error(x, "pdnam~: unsupported A2 submodel in %s (%d ch, %zu weights)",
