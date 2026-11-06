@@ -16,6 +16,7 @@ typedef struct _pdnam_plus_tilde {
     t_object  x_obj;
     t_sample f;
     t_canvas* canvas;
+    NeuralAudio::NeuralModelLoader* loader;
     NeuralAudio::NeuralModel* model;
 } t_pdnam_plus_tilde;
 
@@ -39,7 +40,7 @@ static void pdnam_plus_tilde_load(t_pdnam_plus_tilde *x, t_symbol *model_path)
     }
 
     try {
-        x->model = NeuralAudio::NeuralModel::CreateFromFile(path);
+        x->model = x->loader->CreateFromFile(path);
         if (x->model) {
             post("pdnam+~: loaded model %s", model_path->s_name);
         } else {
@@ -56,6 +57,7 @@ void *pdnam_plus_tilde_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_pdnam_plus_tilde *x = (t_pdnam_plus_tilde *)pd_new(pdnam_plus_tilde_class);
     x->canvas = canvas_getcurrent();
+    x->loader = new NeuralAudio::NeuralModelLoader();
     x->model = nullptr;
 
     t_symbol* model_path = (argc >= 1 && argv[0].a_type == A_SYMBOL)
@@ -96,6 +98,7 @@ void pdnam_plus_tilde_dsp(t_pdnam_plus_tilde *x, t_signal **sp)
 void pdnam_plus_tilde_free(t_pdnam_plus_tilde *x)
 {
     if (x->model) delete x->model;
+    if (x->loader) delete x->loader;
 }
 
 extern "C" void setup_pdnam0x2b_tilde(void) {
