@@ -1,6 +1,6 @@
-#N canvas 1057 154 449 383 10;
-#X obj 51 297 dac~;
-#X obj 51 16 noise~;
+#N canvas 677 215 844 540 10;
+#X obj 50 339 dac~;
+#X obj 50 16 noise~;
 #X obj 50 86 *~;
 #X obj 117 38 line~;
 #X msg 117 15 1 \, 0 300;
@@ -13,9 +13,14 @@
 #X msg 237 15 1 \, 0 300;
 #X obj 109 156 pdnam~ data/BossWN-feather.nam;
 #X obj 170 195 pdnam~ data/BossWN-standard.nam;
+#X obj 228 242 pdnam~ data/BossWN-a2.nam;
+#X obj 226 86 *~;
+#X obj 299 39 line~;
+#X msg 299 16 1 \, 0 300;
 #X connect 1 0 2 0;
 #X connect 1 0 6 0;
 #X connect 1 0 9 0;
+#X connect 1 0 15 0;
 #X connect 2 0 5 0;
 #X connect 3 0 2 1;
 #X connect 4 0 3 0;
@@ -31,3 +36,8 @@
 #X connect 12 0 0 1;
 #X connect 13 0 0 0;
 #X connect 13 0 0 1;
+#X connect 14 0 0 1;
+#X connect 14 0 0 0;
+#X connect 15 0 14 0;
+#X connect 16 0 15 1;
+#X connect 17 0 16 0;
